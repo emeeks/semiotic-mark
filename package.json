@@ -1,9 +1,11 @@
 {
   "name": "semiotic-mark",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Smart data visualization marks for React",
   "main": "lib/index.js",
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -78,6 +80,9 @@
     "prop-types": "15.6.0"
   },
   "nyc": {
-    "exclude": ["tests/unit/lib/*.js", "tests/unit/specs/**/*.js"]
+    "exclude": [
+      "tests/unit/lib/*.js",
+      "tests/unit/specs/**/*.js"
+    ]
   }
 }
