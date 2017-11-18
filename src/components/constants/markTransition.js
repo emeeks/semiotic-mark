@@ -1,3 +1,13 @@
+export const styleTransitionWhitelist = [
+  "strokeOpacity",
+  "fillOpacity",
+  "strokeWidth",
+  "fill",
+  "stroke",
+  "opacity",
+  "strokeDasharray"
+];
+
 export const attributeTransitionWhitelist = [
   "d",
   "height",
@@ -13,17 +23,8 @@ export const attributeTransitionWhitelist = [
   "y2",
   "rx",
   "ry",
-  "r"
-];
-
-export const styleTransitionWhitelist = [
-  "strokeOpacity",
-  "fillOpacity",
-  "strokeWidth",
-  "fill",
-  "stroke",
-  "opacity",
-  "strokeDasharray"
+  "r",
+  ...styleTransitionWhitelist
 ];
 
 //TODO find React Everything to everything translater

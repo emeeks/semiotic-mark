@@ -112,6 +112,10 @@ class Mark extends React.Component {
                 };
               });
           } else {
+            if (reactCSSNameStyleHash[attr]) {
+              attr = reactCSSNameStyleHash[attr];
+            }
+
             select(node)
               .select("*")
               .transition(attr)
