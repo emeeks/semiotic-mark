@@ -1,8 +1,10 @@
-import React from "react";
-import DocumentComponent from "../layout/DocumentComponent";
-import { Mark, DraggableMark, MarkContext } from "../../components";
+import React from "react"
+import DocumentComponent from "../layout/DocumentComponent"
+import { Mark, DraggableMark, MarkContext } from "../../components"
 
-const components = [];
+import stone from "../textures/stone.jpg"
+
+const components = []
 // Add your component proptype data here
 // multiple component proptype documentation supported
 
@@ -23,23 +25,32 @@ components.push({
     freezeY: PropTypes.bool,
     context: PropTypes.object,
     updateContext: PropTypes.func,
-    className: PropTypes.string
+    className: PropTypes.string,
+    transitionDuration: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.object
+        ])
     }
   `
-});
+})
 
 export default class MarkDocs extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = { source: undefined, target: undefined };
-    this.dropMe = this.dropMe.bind(this);
+    super(props)
+    this.state = {
+      source: undefined,
+      target: undefined,
+      transitionColor: "#00a2ce"
+    }
+    this.dropMe = this.dropMe.bind(this)
   }
 
   dropMe(source, target) {
-    this.setState({ source: source.nid, target: target.nid });
+    this.setState({ source: source.nid, target: target.nid })
   }
 
   render() {
+    console.log("this.state", this.state)
     const mark = (
       <Mark
         markType="rect"
@@ -50,7 +61,7 @@ export default class MarkDocs extends React.Component {
         draggable={true}
         style={{ fill: "#00a2ce", stroke: "blue", strokeWidth: "1px" }}
       />
-    );
+    )
 
     const circleMark = (
       <Mark
@@ -61,7 +72,7 @@ export default class MarkDocs extends React.Component {
         cy={255}
         style={{ fill: "#00a2ce", stroke: "blue", strokeWidth: "1px" }}
       />
-    );
+    )
 
     const resetMark = (
       <Mark
@@ -74,7 +85,7 @@ export default class MarkDocs extends React.Component {
         resetAfter={true}
         style={{ fill: "#4d430c" }}
       />
-    );
+    )
 
     const verticalBarMark = (
       <Mark
@@ -85,7 +96,7 @@ export default class MarkDocs extends React.Component {
         y={150}
         style={{ fill: "#b3331d" }}
       />
-    );
+    )
 
     const horizontalBarMark = (
       <Mark
@@ -96,7 +107,7 @@ export default class MarkDocs extends React.Component {
         y={150}
         style={{ fill: "#b6a756" }}
       />
-    );
+    )
 
     const sketchyMark = (
       <Mark
@@ -108,7 +119,7 @@ export default class MarkDocs extends React.Component {
         y={250}
         style={{ fill: "#b86117", stroke: "#b86117", strokeWidth: "4px" }}
       />
-    );
+    )
 
     const DragMark1 = (
       <DraggableMark
@@ -124,7 +135,7 @@ export default class MarkDocs extends React.Component {
         }}
         dropFunction={this.dropMe}
       />
-    );
+    )
 
     const DragMark2 = (
       <DraggableMark
@@ -141,7 +152,7 @@ export default class MarkDocs extends React.Component {
         }}
         dropFunction={this.dropMe}
       />
-    );
+    )
 
     const DragMark3 = (
       <DraggableMark
@@ -158,7 +169,7 @@ export default class MarkDocs extends React.Component {
         }}
         dropFunction={this.dropMe}
       />
-    );
+    )
 
     const DragMark4 = (
       <DraggableMark
@@ -172,7 +183,7 @@ export default class MarkDocs extends React.Component {
         style={{ fill: "#00a2ce" }}
         dropFunction={this.dropMe}
       />
-    );
+    )
 
     const DragMark5 = (
       <DraggableMark
@@ -186,11 +197,11 @@ export default class MarkDocs extends React.Component {
         style={{ fill: "#b3331d" }}
         dropFunction={this.dropMe}
       />
-    );
+    )
 
-    const buttons = [];
+    const buttons = []
 
-    const examples = [];
+    const examples = []
     examples.push(
       {
         name: "Basic",
@@ -278,7 +289,7 @@ export default class MarkDocs extends React.Component {
       {
         name: "Drag and Drop",
         demo: (
-          <svg height="365" width="500">
+          <svg height={300} width={600}>
             <defs>
               <marker
                 id="Triangle"
@@ -459,8 +470,197 @@ export default class MarkDocs extends React.Component {
             </MarkContext>
         </svg>
       `
+      },
+      {
+        name: "Transitions",
+        demo: (
+          <div>
+            <p>
+              Click a square to see how different Mark components with different
+              transitionDuration values will change the speed with which the
+              colors transition.
+            </p>
+            <svg height="365" width="500">
+              <Mark
+                markType="rect"
+                width={100}
+                height={100}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: this.state.transitionColor2,
+                  strokeWidth: 5
+                }}
+                x={25}
+                y={25}
+                onClick={() => {
+                  this.setState({
+                    transitionColor: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`,
+
+                    transitionColor2: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`
+                  })
+                }}
+              />
+              <Mark
+                markType="rect"
+                width={100}
+                height={100}
+                transitionDuration={300}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: this.state.transitionColor2,
+                  strokeWidth: 5
+                }}
+                x={145}
+                y={25}
+                onClick={() => {
+                  this.setState({
+                    transitionColor: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`,
+
+                    transitionColor2: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`
+                  })
+                }}
+              />
+              <Mark
+                markType="rect"
+                width={100}
+                height={100}
+                transitionDuration={{ fill: 2000 }}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: this.state.transitionColor2,
+                  strokeWidth: 5
+                }}
+                x={25}
+                y={145}
+                onClick={() => {
+                  this.setState({
+                    transitionColor: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`,
+
+                    transitionColor2: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`
+                  })
+                }}
+              />
+              <Mark
+                markType="rect"
+                width={100}
+                height={100}
+                transitionDuration={{ default: 5000, stroke: 500 }}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: this.state.transitionColor2,
+                  strokeWidth: 5
+                }}
+                x={145}
+                y={145}
+                onClick={() => {
+                  this.setState({
+                    transitionColor: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`,
+
+                    transitionColor2: `rgb(${parseInt(
+                      Math.random() * 255
+                    )},${parseInt(Math.random() * 255)},${parseInt(
+                      Math.random() * 255
+                    )})`
+                  })
+                }}
+              />
+            </svg>
+          </div>
+        ),
+        source: `
+      import { Mark } from 'semiotic';
+      const randomColor = () => ${"`rgb(${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)})`"}
+
+        <svg height="365" width="500">
+            <Mark
+              markType="rect"
+              width={100}
+              height={100}
+              style={{
+                fill: this.state.transitionColor,
+                stroke: this.state.transitionColor2,
+                strokeWidth: 5
+              }}
+              x={25}
+              y={25}
+              onClick={() => {
+                this.setState({
+                  transitionColor: randomColor(),
+                  transitionColor2: randomColor()
+                })
+              }}
+            />
+            <Mark
+              markType="rect"
+              width={100}
+              height={100}
+              transitionDuration={300}
+              style={{
+                fill: this.state.transitionColor,
+                stroke: this.state.transitionColor2,
+                strokeWidth: 5
+              }}
+              x={145}
+              y={25}
+            />
+            <Mark
+              markType="rect"
+              width={100}
+              height={100}
+              transitionDuration={{ fill: 2000 }}
+              style={{
+                fill: this.state.transitionColor,
+                stroke: this.state.transitionColor2,
+                strokeWidth: 5
+              }}
+              x={25}
+              y={145}
+            />
+            <Mark
+              markType="rect"
+              width={100}
+              height={100}
+              transitionDuration={{ default: 5000, stroke: 500 }}
+              style={{
+                fill: this.state.transitionColor,
+                stroke: this.state.transitionColor2,
+                strokeWidth: 5
+              }}
+              x={145}
+              y={145}
+            />
+          </svg>
+      `
       }
-    );
+    )
 
     return (
       <DocumentComponent
@@ -480,8 +680,8 @@ export default class MarkDocs extends React.Component {
           whitelisted set of attributes and styles.
         </p>
       </DocumentComponent>
-    );
+    )
   }
 }
 
-MarkDocs.title = "Mark";
+MarkDocs.title = "Mark"

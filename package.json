@@ -3,9 +3,7 @@
   "version": "0.0.3",
   "description": "Smart data visualization marks for React",
   "main": "lib/index.js",
-  "files": [
-    "lib"
-  ],
+  "files": ["lib"],
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -76,13 +74,9 @@
     "d3-selection": "1.1.0",
     "d3-shape": "1.0.3",
     "d3-transition": "1.0.3",
-    "flubber": "0.4.0",
     "prop-types": "15.6.0"
   },
   "nyc": {
-    "exclude": [
-      "tests/unit/lib/*.js",
-      "tests/unit/specs/**/*.js"
-    ]
+    "exclude": ["tests/unit/lib/*.js", "tests/unit/specs/**/*.js"]
   }
 }
