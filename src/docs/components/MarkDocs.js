@@ -2,8 +2,6 @@ import React from "react"
 import DocumentComponent from "../layout/DocumentComponent"
 import { Mark, DraggableMark, MarkContext } from "../../components"
 
-import stone from "../textures/stone.jpg"
-
 const components = []
 // Add your component proptype data here
 // multiple component proptype documentation supported
