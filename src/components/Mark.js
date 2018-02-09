@@ -1,28 +1,23 @@
-import React from "react"
-import { select } from "d3-selection"
-import "d3-transition"
+import React from "react";
+import { select } from "d3-selection";
+import "d3-transition";
 
-// Decorator stopped working why?
-//import draggable from '../decorators/draggable'
-import { generateSVG } from "./markBehavior/drawing"
+import { generateSVG } from "./markBehavior/drawing";
 
 import {
   attributeTransitionWhitelist,
   reactCSSNameStyleHash,
   differentD
-} from "./constants/markTransition"
+} from "./constants/markTransition";
 
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
-// components
-
-//@draggable
 class Mark extends React.Component {
   constructor(props) {
-    super(props)
-    this._mouseup = this._mouseup.bind(this)
-    this._mousedown = this._mousedown.bind(this)
-    this._mousemove = this._mousemove.bind(this)
+    super(props);
+    this._mouseup = this._mouseup.bind(this);
+    this._mousedown = this._mousedown.bind(this);
+    this._mousemove = this._mousemove.bind(this);
 
     this.state = {
       translate: [0, 0],
@@ -30,7 +25,7 @@ class Mark extends React.Component {
       translateOrigin: [0, 0],
       dragging: false,
       uiUpdate: false
-    }
+    };
   }
 
   shouldComponentUpdate(nextProps) {
@@ -44,100 +39,104 @@ class Mark extends React.Component {
       this.props.className !== nextProps.className ||
       this.props.children !== nextProps.children
     ) {
-      return true
+      return true;
     }
 
-    let node = this.node
+    const canvas =
+      (this.props.canvas !== true && this.props.canvas) ||
+      (this.context && this.context.canvas);
 
-    const actualSVG = generateSVG(nextProps, nextProps.className)
-    let cloneProps = actualSVG.props
+    let node = this.node;
+
+    const actualSVG = generateSVG(nextProps, nextProps.className);
+    let cloneProps = actualSVG.props;
 
     if (!cloneProps) {
-      return true
+      return true;
     }
 
-    let { transitionDuration = {} } = nextProps
-    const isDefault = typeof transitionDuration === "number"
-    const defaultDuration = isDefault ? transitionDuration : 1000
+    let { transitionDuration = {} } = nextProps;
+    const isDefault = typeof transitionDuration === "number";
+    const defaultDuration = isDefault ? transitionDuration : 1000;
     transitionDuration = isDefault
       ? { default: defaultDuration }
-      : Object.assign({ default: defaultDuration }, transitionDuration)
+      : Object.assign({ default: defaultDuration }, transitionDuration);
 
     attributeTransitionWhitelist.forEach(function(attr) {
       if (select(node).select("*").transition) {
         if (attr === "d" && differentD(cloneProps.d, this.props.d)) {
           select(node)
             .select("*")
-            .attr("d", cloneProps.d)
+            .attr("d", cloneProps.d);
         } else if (cloneProps[attr] !== this.props[attr]) {
           if (reactCSSNameStyleHash[attr]) {
-            attr = reactCSSNameStyleHash[attr]
+            attr = reactCSSNameStyleHash[attr];
           }
 
           const {
             default: defaultDur,
             [attr]: appliedDuration = defaultDur
-          } = transitionDuration
+          } = transitionDuration;
 
           select(node)
             .select("*")
             .transition(attr)
             .duration(appliedDuration)
-            .attr(attr, cloneProps[attr])
+            .attr(attr, cloneProps[attr]);
         }
       }
-    }, this)
+    }, this);
 
     if (cloneProps.style) {
       attributeTransitionWhitelist.forEach(function(style) {
         if (cloneProps.style[style] !== this.props.style[style]) {
-          let nextValue = cloneProps.style[style]
+          let nextValue = cloneProps.style[style];
 
           if (reactCSSNameStyleHash[style]) {
-            style = reactCSSNameStyleHash[style]
+            style = reactCSSNameStyleHash[style];
           }
 
           if (select(node).select("*").transition) {
             const {
               default: defaultDur,
               [style]: appliedDuration = defaultDur
-            } = transitionDuration
+            } = transitionDuration;
 
             select(node)
               .select("*")
               .transition(style)
               .duration(appliedDuration)
-              .style(style, nextValue)
+              .style(style, nextValue);
           } else {
             select(node)
               .select("*")
-              .style(style, nextValue)
+              .style(style, nextValue);
           }
         }
-      }, this)
+      }, this);
     }
 
-    return false
+    return false;
   }
 
   _mouseup() {
-    document.onmousemove = null
+    document.onmousemove = null;
 
-    let finalTranslate = [0, 0]
-    if (!this.props.resetAfter) finalTranslate = this.state.translate
+    let finalTranslate = [0, 0];
+    if (!this.props.resetAfter) finalTranslate = this.state.translate;
 
     this.setState({
       dragging: false,
       translate: finalTranslate,
       uiUpdate: false
-    })
+    });
     if (
       this.props.dropFunction &&
       this.props.context &&
       this.props.context.dragSource
     ) {
-      this.props.dropFunction(this.props.context.dragSource.props, this.props)
-      this.props.updateContext("dragSource", undefined)
+      this.props.dropFunction(this.props.context.dragSource.props, this.props);
+      this.props.updateContext("dragSource", undefined);
     }
   }
 
@@ -146,41 +145,41 @@ class Mark extends React.Component {
       mouseOrigin: [event.pageX, event.pageY],
       translateOrigin: this.state.translate,
       dragging: true
-    })
-    document.onmouseup = this._mouseup
-    document.onmousemove = this._mousemove
+    });
+    document.onmouseup = this._mouseup;
+    document.onmousemove = this._mousemove;
   }
 
   _mousemove(event) {
-    let xAdjust = this.props.freezeX ? 0 : 1
-    let yAdjust = this.props.freezeY ? 0 : 1
+    let xAdjust = this.props.freezeX ? 0 : 1;
+    let yAdjust = this.props.freezeY ? 0 : 1;
 
     let adjustedPosition = [
       event.pageX - this.state.mouseOrigin[0],
       event.pageY - this.state.mouseOrigin[1]
-    ]
+    ];
     let adjustedTranslate = [
       (adjustedPosition[0] + this.state.translateOrigin[0]) * xAdjust,
       (adjustedPosition[1] + this.state.translateOrigin[1]) * yAdjust
-    ]
+    ];
     if (this.props.dropFunction && this.state.uiUpdate === false) {
-      this.props.updateContext("dragSource", this)
+      this.props.updateContext("dragSource", this);
       this.setState({
         translate: adjustedTranslate,
         uiUpdate: true,
         dragging: true
-      })
+      });
     } else {
-      this.setState({ translate: adjustedTranslate })
+      this.setState({ translate: adjustedTranslate });
     }
   }
   render() {
-    let className = this.props.className || ""
+    let className = this.props.className || "";
 
-    let mouseIn = null
-    let mouseOut = null
+    let mouseIn = null;
+    let mouseOut = null;
 
-    const actualSVG = generateSVG(this.props, className)
+    const actualSVG = generateSVG(this.props, className);
 
     if (this.props.draggable) {
       return (
@@ -200,7 +199,7 @@ class Mark extends React.Component {
         >
           {actualSVG}
         </g>
-      )
+      );
     } else {
       return (
         <g
@@ -211,7 +210,7 @@ class Mark extends React.Component {
         >
           {actualSVG}
         </g>
-      )
+      );
     }
   }
 }
@@ -228,6 +227,10 @@ Mark.propTypes = {
   context: PropTypes.object,
   updateContext: PropTypes.func,
   className: PropTypes.string
-}
+};
 
-export default Mark
+Mark.contextTypes = {
+  canvas: PropTypes.object
+};
+
+export default Mark;
