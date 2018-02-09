@@ -1,6 +1,6 @@
 {
   "name": "semiotic-mark",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Smart data visualization marks for React",
   "main": "lib/index.js",
   "files": [
