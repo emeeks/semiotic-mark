@@ -62,59 +62,77 @@ class Mark extends React.Component {
       ? { default: defaultDuration }
       : Object.assign({ default: defaultDuration }, transitionDuration);
 
-    attributeTransitionWhitelist.forEach(function(attr) {
-      if (select(node).select("*").transition) {
-        if (attr === "d" && differentD(cloneProps.d, this.props.d)) {
-          select(node)
-            .select("*")
-            .attr("d", cloneProps.d);
-        } else if (cloneProps[attr] !== this.props[attr]) {
-          if (reactCSSNameStyleHash[attr]) {
-            attr = reactCSSNameStyleHash[attr];
-          }
+    const newProps = Object.keys(cloneProps).filter(d => d !== "style");
+    const oldProps = Object.keys(this.props).filter(
+      d => d !== "style" && !newProps.find(d)
+    );
 
-          const {
-            default: defaultDur,
-            [attr]: appliedDuration = defaultDur
-          } = transitionDuration;
+    const hasTransition = select(node).select("*").transition;
 
-          select(node)
-            .select("*")
-            .transition(attr)
-            .duration(appliedDuration)
-            .attr(attr, cloneProps[attr]);
-        }
-      }
-    }, this);
-
-    if (cloneProps.style) {
-      attributeTransitionWhitelist.forEach(function(style) {
-        if (cloneProps.style[style] !== this.props.style[style]) {
-          let nextValue = cloneProps.style[style];
-
-          if (reactCSSNameStyleHash[style]) {
-            style = reactCSSNameStyleHash[style];
-          }
-
-          if (select(node).select("*").transition) {
-            const {
-              default: defaultDur,
-              [style]: appliedDuration = defaultDur
-            } = transitionDuration;
-
-            select(node)
-              .select("*")
-              .transition(style)
-              .duration(appliedDuration)
-              .style(style, nextValue);
-          } else {
-            select(node)
-              .select("*")
-              .style(style, nextValue);
-          }
-        }
-      }, this);
+    function adjustedPropName(propname) {
+      return reactCSSNameStyleHash[propname] || propname;
     }
+
+    oldProps.forEach(oldProp => {
+      if (oldProp !== "style") {
+        select(node)
+          .select("*")
+          .attr(adjustedPropName(oldProp), undefined);
+      }
+    });
+
+    newProps.forEach(newProp => {
+      if (
+        !hasTransition ||
+        !attributeTransitionWhitelist.find(newProp) ||
+        (newProp === "d" && differentD(cloneProps.d, this.props.d))
+      ) {
+        select(node)
+          .select("*")
+          .attr(adjustedPropName(newProp), cloneProps[newProp]);
+      } else {
+        const {
+          default: defaultDur,
+          [newProp]: appliedDuration = defaultDur
+        } = transitionDuration;
+
+        select(node)
+          .select("*")
+          .transition(adjustedPropName(newProp))
+          .duration(appliedDuration)
+          .attr(adjustedPropName(newProp), cloneProps[newProp]);
+      }
+    });
+
+    const newStyleProps = Object.keys(cloneProps.style || {});
+    const oldStyleProps = Object.keys(this.props.style || {}).filter(
+      d => !newStyleProps.find(d)
+    );
+
+    oldStyleProps.forEach(oldProp => {
+      select(node)
+        .select("*")
+        .style(adjustedPropName(oldProp), undefined);
+    });
+
+    newStyleProps.forEach(newProp => {
+      if (!hasTransition) {
+        select(node)
+          .select("*")
+          .style(adjustedPropName(newProp), cloneProps.style[newProp]);
+      } else {
+        const {
+          default: defaultDur,
+          [newProp]: appliedDuration = defaultDur
+        } = transitionDuration;
+
+        select(node)
+          .select("*")
+          .transition(adjustedPropName(newProp))
+          .duration(appliedDuration)
+          .style(adjustedPropName(newProp), cloneProps.style[newProp]);
+      }
+    });
 
     return false;
   }
