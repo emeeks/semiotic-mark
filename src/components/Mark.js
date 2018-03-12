@@ -64,7 +64,7 @@ class Mark extends React.Component {
 
     const newProps = Object.keys(cloneProps).filter(d => d !== "style");
     const oldProps = Object.keys(this.props).filter(
-      d => d !== "style" && !newProps.find(d)
+      d => d !== "style" && !newProps.find(p => p === d)
     );
 
     const hasTransition = select(node).select("*").transition;
@@ -84,7 +84,7 @@ class Mark extends React.Component {
     newProps.forEach(newProp => {
       if (
         !hasTransition ||
-        !attributeTransitionWhitelist.find(newProp) ||
+        !attributeTransitionWhitelist.find(d => d === newProp) ||
         (newProp === "d" && differentD(cloneProps.d, this.props.d))
       ) {
         select(node)
@@ -106,7 +106,7 @@ class Mark extends React.Component {
 
     const newStyleProps = Object.keys(cloneProps.style || {});
     const oldStyleProps = Object.keys(this.props.style || {}).filter(
-      d => !newStyleProps.find(d)
+      d => !newStyleProps.find(p => p === d)
     );
 
     oldStyleProps.forEach(oldProp => {
