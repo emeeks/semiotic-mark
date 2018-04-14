@@ -6,26 +6,28 @@ export const styleTransitionWhitelist = [
   "stroke",
   "opacity",
   "strokeDasharray"
-]
+];
 
-export const attributeTransitionWhitelist = [
+export const redrawSketchyList = [
   "d",
   "height",
   "width",
-  "transform",
-  "x",
-  "y",
-  "cx",
-  "cy",
   "x1",
   "x2",
   "y1",
   "y2",
   "rx",
   "ry",
-  "r",
+  "r"
+];
+
+export const attributeTransitionWhitelist = [
+  "transform",
+  "rx",
+  "ry",
+  ...redrawSketchyList,
   ...styleTransitionWhitelist
-]
+];
 
 //TODO find React Everything to everything translater
 export const reactCSSNameStyleHash = {
@@ -33,38 +35,38 @@ export const reactCSSNameStyleHash = {
   fillOpacity: "fill-opacity",
   strokeOpacity: "stroke-opacity",
   strokeDasharray: "stroke-dasharray"
-}
+};
 
 export const differentD = (d, newD) => {
   if (!d || !newD) {
-    return true
+    return true;
   }
-  const lowerD = d.toLowerCase()
-  const lowerNewD = newD.toLowerCase()
+  const lowerD = d.toLowerCase();
+  const lowerNewD = newD.toLowerCase();
 
   if (
     (lowerD.match(/m/g) || []).length !== (lowerNewD.match(/m/g) || []).length
   ) {
-    return true
+    return true;
   }
 
   if (
     (lowerD.match(/l/g) || []).length !== (lowerNewD.match(/l/g) || []).length
   ) {
-    return true
+    return true;
   }
 
   if (
     (lowerD.match(/c/g) || []).length !== (lowerNewD.match(/c/g) || []).length
   ) {
-    return true
+    return true;
   }
 
   if (
     (lowerD.match(/a/g) || []).length !== (lowerNewD.match(/a/g) || []).length
   ) {
-    return true
+    return true;
   }
 
-  return false
-}
+  return false;
+};

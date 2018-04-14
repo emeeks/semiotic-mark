@@ -3,14 +3,25 @@ import { select } from "d3-selection";
 import "d3-transition";
 
 import { generateSVG } from "./markBehavior/drawing";
+import { generator } from "roughjs";
 
 import {
   attributeTransitionWhitelist,
   reactCSSNameStyleHash,
+  redrawSketchyList,
   differentD
 } from "./constants/markTransition";
 
 import PropTypes from "prop-types";
+
+function generateSketchyHash(props) {
+  let { style = {} } = props;
+  let sketchyHash = "";
+  redrawSketchyList.forEach(d => {
+    sketchyHash += `-${style[d] || props[d]}`;
+  });
+  return sketchyHash;
+}
 
 class Mark extends React.Component {
   constructor(props) {
@@ -24,18 +35,168 @@ class Mark extends React.Component {
       mouseOrigin: [],
       translateOrigin: [0, 0],
       dragging: false,
-      uiUpdate: false
+      uiUpdate: false,
+      sketchyFill: undefined,
+      sketchyHash: ""
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.updateSketchy(nextProps);
+  }
+  componentWillMount() {
+    this.updateSketchy(this.props);
+  }
+
+  updateSketchy(nextProps) {
+    const renderOptions =
+      nextProps.renderMode !== null && typeof nextProps.renderMode === "object"
+        ? nextProps.renderMode
+        : { renderMode: nextProps.renderMode };
+
+    const sketchyHash =
+      renderOptions.renderMode === "sketchy" && generateSketchyHash(nextProps);
+    if (sketchyHash && sketchyHash !== this.state.sketchyHash) {
+      const { style = {} } = nextProps;
+      const {
+        simplification = 0,
+        curveStepCount = 9,
+        fillStyle = "hachure",
+        roughness = 1,
+        bowing = 1,
+        fillWeight = 1,
+        hachureAngle = -41
+      } = renderOptions;
+
+      const roughGenerator = generator({}, { width: 1000, height: 1000 });
+      let drawingInstructions;
+      const roughOptions = {
+        fill: style.fill || nextProps.fill,
+        stroke: style.stroke || nextProps.stroke,
+        strokeWidth: style.strokeWidth || nextProps.strokeWidth,
+        fillStyle: fillStyle,
+        roughness: roughness,
+        bowing: bowing,
+        fillWeight: fillWeight,
+        hachureAngle: hachureAngle,
+        hachureGap:
+          renderOptions.hachureGap ||
+          (style.fillOpacity && (5 - style.fillOpacity * 5) * fillWeight) ||
+          fillWeight * 2,
+        curveStepCount: curveStepCount,
+        simplification: simplification
+      };
+
+      switch (nextProps.markType) {
+        case "line":
+          drawingInstructions = roughGenerator.line(
+            nextProps.x1,
+            nextProps.y1,
+            nextProps.x2,
+            nextProps.y2,
+            roughOptions
+          );
+          break;
+        case "rect":
+          if (nextProps.rx || nextProps.ry) {
+            drawingInstructions = roughGenerator.circle(
+              nextProps.x,
+              nextProps.y,
+              nextProps.width,
+              roughOptions
+            );
+          } else {
+            drawingInstructions = roughGenerator.rectangle(
+              nextProps.x,
+              nextProps.y,
+              nextProps.width,
+              nextProps.height,
+              roughOptions
+            );
+          }
+          break;
+        case "circle":
+          drawingInstructions = roughGenerator.circle(
+            nextProps.cx,
+            nextProps.cy,
+            nextProps.r * 2,
+            roughOptions
+          );
+          break;
+        case "ellipse":
+          drawingInstructions = roughGenerator.ellipse(
+            nextProps.x,
+            nextProps.y,
+            nextProps.width,
+            nextProps.height,
+            roughOptions
+          );
+          break;
+        case "polygon":
+          drawingInstructions = roughGenerator.polygon(
+            nextProps.points,
+            roughOptions
+          );
+          break;
+        case "path":
+          drawingInstructions = roughGenerator.path(nextProps.d, roughOptions);
+          break;
+      }
+
+      const roughPieces = [];
+      roughGenerator
+        .toPaths(drawingInstructions)
+        .forEach(({ d, fill, stroke, strokeWidth, pattern }) => {
+          if (pattern) {
+            const roughRandomID = `rough-${Math.random()}`;
+            roughPieces.push(
+              <pattern
+                id={roughRandomID}
+                x={pattern.x}
+                y={pattern.y}
+                height={pattern.height}
+                width={pattern.width}
+                viewBox={pattern.viewBox}
+              >
+                <path
+                  d={pattern.path.d}
+                  style={{
+                    fill: pattern.path.fill,
+                    stroke: pattern.path.stroke,
+                    strokeWidth: pattern.path.strokeWidth
+                  }}
+                />
+              </pattern>
+            );
+            fill = `url(#${roughRandomID})`;
+          }
+          roughPieces.push(
+            <path
+              d={d}
+              fill={fill}
+              stroke={stroke}
+              strokeWidth={strokeWidth}
+              transform={nextProps.transform}
+            />
+          );
+        });
+
+      this.setState({
+        sketchyHash: sketchyHash,
+        sketchyFill: roughPieces
+      });
+    }
   }
 
   shouldComponentUpdate(nextProps) {
     //data-driven transition time?
     if (
+      nextProps.renderMode ||
+      this.props.renderMode ||
       this.props.markType !== nextProps.markType ||
       this.state.dragging ||
       this.props.forceUpdate ||
       nextProps.forceUpdate ||
-      this.props.renderMode !== nextProps.renderMode ||
       this.props.className !== nextProps.className ||
       this.props.children !== nextProps.children
     ) {
@@ -197,7 +358,12 @@ class Mark extends React.Component {
     let mouseIn = null;
     let mouseOut = null;
 
-    const actualSVG = generateSVG(this.props, className);
+    const actualSVG =
+      ((this.props.renderMode === "sketchy" ||
+        (this.props.renderMode &&
+          this.props.renderMode.renderMode === "sketchy")) &&
+        this.state.sketchyFill) ||
+      generateSVG(this.props, className);
 
     if (this.props.draggable) {
       return (

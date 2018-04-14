@@ -180,7 +180,6 @@ class Documentation extends React.Component {
     }
 
     const { AdditionalContent } = this.props;
-    console.log("additionalContent", AdditionalContent);
 
     return (
       <div className={classes.root}>
@@ -210,7 +209,8 @@ class Documentation extends React.Component {
                 <span
                   style={{ cursor: "pointer", color: "white" }}
                   onClick={() =>
-                    this.props.history ? this.props.history.push("/") : null}
+                    this.props.history ? this.props.history.push("/") : null
+                  }
                 >
                   Semiotic
                 </span>
