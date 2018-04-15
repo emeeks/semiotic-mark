@@ -77,7 +77,7 @@
     "d3-shape": "1.0.3",
     "d3-transition": "1.0.3",
     "prop-types": "15.6.0",
-    "roughjs": "2.1.1"
+    "roughjs": "github:emeeks/rough"
   },
   "nyc": {
     "exclude": [
