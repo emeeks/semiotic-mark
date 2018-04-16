@@ -90,25 +90,25 @@ class Mark extends React.Component {
       switch (nextProps.markType) {
         case "line":
           drawingInstructions = roughGenerator.line(
-            nextProps.x1,
-            nextProps.y1,
-            nextProps.x2,
-            nextProps.y2,
+            nextProps.x1 || 0,
+            nextProps.y1 || 0,
+            nextProps.x2 || 0,
+            nextProps.y2 || 0,
             roughOptions
           );
           break;
         case "rect":
           if (nextProps.rx || nextProps.ry) {
             drawingInstructions = roughGenerator.circle(
-              nextProps.x,
-              nextProps.y,
+              nextProps.x || 0 + nextProps.width / 2,
+              nextProps.y || 0 + nextProps.width / 2,
               nextProps.width,
               roughOptions
             );
           } else {
             drawingInstructions = roughGenerator.rectangle(
-              nextProps.x,
-              nextProps.y,
+              nextProps.x || 0,
+              nextProps.y || 0,
               nextProps.width,
               nextProps.height,
               roughOptions
@@ -117,16 +117,16 @@ class Mark extends React.Component {
           break;
         case "circle":
           drawingInstructions = roughGenerator.circle(
-            nextProps.cx,
-            nextProps.cy,
+            nextProps.cx || 0,
+            nextProps.cy || 0,
             nextProps.r * 2,
             roughOptions
           );
           break;
         case "ellipse":
           drawingInstructions = roughGenerator.ellipse(
-            nextProps.x,
-            nextProps.y,
+            nextProps.x || 0,
+            nextProps.y || 0,
             nextProps.width,
             nextProps.height,
             roughOptions
