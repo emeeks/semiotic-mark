@@ -100,8 +100,8 @@ class Mark extends React.Component {
         case "rect":
           if (nextProps.rx || nextProps.ry) {
             drawingInstructions = roughGenerator.circle(
-              nextProps.x || 0 + nextProps.width / 2,
-              nextProps.y || 0 + nextProps.width / 2,
+              (nextProps.x || 0) + nextProps.width / 2,
+              (nextProps.y || 0) + nextProps.width / 2,
               nextProps.width,
               roughOptions
             );
