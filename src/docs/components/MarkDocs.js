@@ -56,7 +56,6 @@ export default class MarkDocs extends React.Component {
   }
 
   render() {
-    console.log("this.state", this.state);
     const mark = (
       <Mark
         markType="rect"
@@ -565,7 +564,6 @@ export default class MarkDocs extends React.Component {
             </p>
             <button
               onClick={() => {
-                console.log("WHATHAHTA");
                 this.setState({
                   width: 50 + Math.random() * 50,
                   height: 50 + Math.random() * 50,

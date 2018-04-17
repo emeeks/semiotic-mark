@@ -146,11 +146,12 @@ class Mark extends React.Component {
       const roughPieces = [];
       roughGenerator
         .toPaths(drawingInstructions)
-        .forEach(({ d, fill, stroke, strokeWidth, pattern }) => {
+        .forEach(({ d, fill, stroke, strokeWidth, pattern }, i) => {
           if (pattern) {
             const roughRandomID = `rough-${Math.random()}`;
             roughPieces.push(
               <pattern
+                key={`pattern-${i}`}
                 id={roughRandomID}
                 x={pattern.x}
                 y={pattern.y}
@@ -159,6 +160,7 @@ class Mark extends React.Component {
                 viewBox={pattern.viewBox}
               >
                 <path
+                  key={`pattern-path-${i}`}
                   d={pattern.path.d}
                   style={{
                     fill: pattern.path.fill,
@@ -172,10 +174,13 @@ class Mark extends React.Component {
           }
           roughPieces.push(
             <path
+              key={`path-${i}`}
               d={d}
-              fill={fill}
-              stroke={stroke}
-              strokeWidth={strokeWidth}
+              style={{
+                fill: fill,
+                stroke: stroke,
+                strokeWidth: strokeWidth
+              }}
               transform={nextProps.transform}
             />
           );
