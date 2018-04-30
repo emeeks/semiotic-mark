@@ -3,7 +3,7 @@ import { select } from "d3-selection";
 import "d3-transition";
 
 import { generateSVG } from "./markBehavior/drawing";
-import { generator } from "roughjs";
+import { RoughGenerator } from "roughjs/lib/generator";
 
 import {
   attributeTransitionWhitelist,
@@ -68,7 +68,10 @@ class Mark extends React.Component {
         hachureAngle = -41
       } = renderOptions;
 
-      const roughGenerator = generator({}, { width: 1000, height: 1000 });
+      const roughGenerator = new RoughGenerator(
+        {},
+        { width: 1000, height: 1000 }
+      );
       let drawingInstructions;
       const roughOptions = {
         fill: style.fill || nextProps.fill,
