@@ -52,7 +52,7 @@
     "material-design-icons-svg": "1.1.2",
     "nyc": "5.5.0",
     "react": "^16.0.0",
-    "react-dimensions": "github:AlesJiranek/react-dimensions",
+    "react-dimensions": "git://github.com/AlesJiranek/react-dimensions",
     "react-dom": "^16.0.0",
     "react-element-to-jsx-string": "^12.0.0",
     "react-prism": "4.3.1",
@@ -61,7 +61,7 @@
     "react-scripts": "1.0.13",
     "react-tap-event-plugin": "3.0.2",
     "react-test-renderer": "16.0.0",
-    "reactstrap": "github:jameswomack/reactstrap#react-popper_react-dom-16",
+    "reactstrap": "git://github.com/jameswomack/reactstrap#react-popper_react-dom-16",
     "tap-difflet": "0.4.0",
     "tap-notify": "1.0.0",
     "tape": "4.4.0"
@@ -77,7 +77,7 @@
     "d3-shape": "^1.0.3",
     "d3-transition": "^1.0.3",
     "prop-types": "^15.6.0",
-    "roughjs": "github:emeeks/rough"
+    "roughjs": "git://github.com/emeeks/rough"
   },
   "nyc": {
     "exclude": [
