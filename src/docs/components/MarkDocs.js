@@ -46,7 +46,9 @@ export default class MarkDocs extends React.Component {
       source: undefined,
       target: undefined,
       transitionColor: "#00a2ce",
-      di: 0
+      di: 0,
+      x: 0,
+      y: 0
     };
     this.dropMe = this.dropMe.bind(this);
   }
@@ -567,6 +569,8 @@ export default class MarkDocs extends React.Component {
                 this.setState({
                   width: 50 + Math.random() * 50,
                   height: 50 + Math.random() * 50,
+                  x: Math.random() * 10,
+                  y: Math.random() * 10,
                   di: (this.state.di + 1) % 2,
                   transitionColor: `rgb(${parseInt(
                     Math.random() * 255
@@ -594,8 +598,8 @@ export default class MarkDocs extends React.Component {
                   stroke: this.state.transitionColor2,
                   strokeWidth: 5
                 }}
-                x={25}
-                y={25}
+                x={25 + this.state.x}
+                y={25 + this.state.y}
               />
               <Mark
                 markType="rect"
@@ -607,8 +611,8 @@ export default class MarkDocs extends React.Component {
                   stroke: this.state.transitionColor2,
                   strokeWidth: 5
                 }}
-                x={145}
-                y={25}
+                x={145 + this.state.x}
+                y={25 + this.state.y}
               />
               <Mark
                 markType="rect"
@@ -620,8 +624,8 @@ export default class MarkDocs extends React.Component {
                   stroke: this.state.transitionColor2,
                   strokeWidth: 5
                 }}
-                x={25}
-                y={145}
+                x={25 + this.state.x}
+                y={145 + this.state.y}
               />
               <Mark
                 markType="rect"
@@ -633,8 +637,8 @@ export default class MarkDocs extends React.Component {
                   stroke: this.state.transitionColor2,
                   strokeWidth: 5
                 }}
-                x={145}
-                y={145}
+                x={145 + this.state.x}
+                y={145 + this.state.y}
               />
               <Mark
                 markType="path"
