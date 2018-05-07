@@ -9,6 +9,12 @@ export const styleTransitionWhitelist = [
 ];
 
 export const redrawSketchyList = [
+  "fill",
+  "stroke",
+  "cx",
+  "cy",
+  "x",
+  "y",
   "d",
   "height",
   "width",
@@ -23,8 +29,6 @@ export const redrawSketchyList = [
 
 export const attributeTransitionWhitelist = [
   "transform",
-  "rx",
-  "ry",
   ...redrawSketchyList,
   ...styleTransitionWhitelist
 ];
