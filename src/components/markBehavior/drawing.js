@@ -338,6 +338,8 @@ export function generateSVG(props, className) {
   delete cloneProps.searchIterations;
   delete cloneProps.simpleInterpolate;
   delete cloneProps.transitionDuration;
+  delete cloneProps.tx;
+  delete cloneProps.ty;
 
   if (markType === "verticalbar") {
     markType = "rect";
