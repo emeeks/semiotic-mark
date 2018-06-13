@@ -3,7 +3,7 @@ import { select } from "d3-selection";
 import "d3-transition";
 
 import { generateSVG } from "./markBehavior/drawing";
-import { RoughGenerator } from "roughjs/lib/generator";
+import { RoughGenerator } from "roughjs-es5/lib/generator";
 
 import {
   attributeTransitionWhitelist,
