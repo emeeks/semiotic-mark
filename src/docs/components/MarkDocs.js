@@ -1,12 +1,43 @@
 import React from "react";
 import DocumentComponent from "../layout/DocumentComponent";
 import { Mark, DraggableMark, MarkContext } from "../../components";
+import { arc } from "d3-shape";
+import { interpolateNumber } from "d3-interpolate";
 
 const components = [];
 // Add your component proptype data here
 // multiple component proptype documentation supported
 
 const colors = { a: "#00a2ce", b: "#b86117", c: "#b6a756" };
+
+const pieArcGenerator = (oldProps, newProps) => {
+  const innerRadiusInterpolator = interpolateNumber(
+    oldProps.innerRadius,
+    newProps.innerRadius
+  );
+  const outerRadiusInterpolator = interpolateNumber(
+    oldProps.outerRadius,
+    newProps.outerRadius
+  );
+  const startAngleInterpolator = interpolateNumber(
+    oldProps.startAngle,
+    newProps.startAngle
+  );
+  const endAngleInterpolator = interpolateNumber(
+    oldProps.endAngle,
+    newProps.endAngle
+  );
+
+  return t => {
+    const sliceGenerator = arc()
+      .innerRadius(innerRadiusInterpolator(t))
+      .outerRadius(outerRadiusInterpolator(t));
+    return sliceGenerator({
+      startAngle: startAngleInterpolator(t),
+      endAngle: endAngleInterpolator(t)
+    });
+  };
+};
 
 components.push({
   name: "Mark",
@@ -48,7 +79,25 @@ export default class MarkDocs extends React.Component {
       transitionColor: "#00a2ce",
       di: 0,
       x: 0,
-      y: 0
+      y: 0,
+      customTween: {
+        fn: pieArcGenerator,
+        props: {
+          startAngle: 0,
+          endAngle: 0.5,
+          innerRadius: 0,
+          outerRadius: 50
+        }
+      },
+      customTween2: {
+        fn: pieArcGenerator,
+        props: {
+          startAngle: 0.5,
+          endAngle: 1,
+          innerRadius: 0,
+          outerRadius: 50
+        }
+      }
     };
     this.dropMe = this.dropMe.bind(this);
   }
@@ -67,6 +116,7 @@ export default class MarkDocs extends React.Component {
         y={25}
         draggable={true}
         style={{ fill: "#00a2ce", stroke: "blue", strokeWidth: "1px" }}
+        aria-label="Hey a rectangle"
       />
     );
 
@@ -645,8 +695,8 @@ export default class MarkDocs extends React.Component {
                 d={dOptions[this.state.di]}
                 transitionDuration={{ d: 5000, stroke: 500 }}
                 style={{
-                  fill: this.state.transitionColor,
-                  stroke: this.state.transitionColor2,
+                  fill: this.state.transitionColor2,
+                  stroke: this.state.transitionColor,
                   strokeWidth: this.state.di + 1
                 }}
                 transform="translate(400,100)"
@@ -718,6 +768,74 @@ export default class MarkDocs extends React.Component {
             />
           </svg>
       `
+      },
+      {
+        name: "Custom Tween",
+        demo: (
+          <div>
+            <p>Not simple</p>
+            <button
+              onClick={() => {
+                this.setState({
+                  customTween: {
+                    fn: pieArcGenerator,
+                    props: {
+                      startAngle: 0,
+                      endAngle: 1,
+                      innerRadius: 0,
+                      outerRadius: 50
+                    }
+                  },
+                  customTween2: {
+                    fn: pieArcGenerator,
+                    props: {
+                      startAngle: 1,
+                      endAngle: 2,
+                      innerRadius: 0,
+                      outerRadius: 50
+                    }
+                  }
+                });
+              }}
+              style={{ color: "black" }}
+            >
+              Change Styles
+            </button>
+            <svg height="365" width="600">
+              <Mark
+                markType="path"
+                d={pieArcGenerator(
+                  this.state.customTween.props,
+                  this.state.customTween.props
+                )(1)}
+                customTween={this.state.customTween}
+                transitionDuration={{ d: 2000, stroke: 500 }}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: "black",
+                  strokeWidth: 2
+                }}
+                transform="translate(200,200)"
+              />
+              <Mark
+                markType="path"
+                d={pieArcGenerator(
+                  this.state.customTween2.props,
+                  this.state.customTween2.props
+                )(1)}
+                customTween={this.state.customTween2}
+                transitionDuration={{ d: 2000, stroke: 500 }}
+                style={{
+                  fill: this.state.transitionColor,
+                  stroke: "black",
+                  strokeWidth: 2
+                }}
+                transform="translate(200,200)"
+              />
+            </svg>
+          </div>
+        ),
+        source: ``
       }
     );
 

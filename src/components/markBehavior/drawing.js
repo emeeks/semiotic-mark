@@ -340,6 +340,7 @@ export function generateSVG(props, className) {
   delete cloneProps.transitionDuration;
   delete cloneProps.tx;
   delete cloneProps.ty;
+  delete cloneProps.customTween;
 
   if (markType === "verticalbar") {
     markType = "rect";

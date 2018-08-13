@@ -197,7 +197,6 @@ class Mark extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    //data-driven transition time?
     if (
       nextProps.renderMode ||
       this.props.renderMode ||
@@ -206,7 +205,9 @@ class Mark extends React.Component {
       this.props.forceUpdate ||
       nextProps.forceUpdate ||
       this.props.className !== nextProps.className ||
-      this.props.children !== nextProps.children
+      this.props.children !== nextProps.children ||
+      (this.props.customTween && !nextProps.customTween) ||
+      (!this.props.customTween && nextProps.customTween)
     ) {
       return true;
     }
@@ -229,7 +230,7 @@ class Mark extends React.Component {
     const defaultDuration = isDefault ? transitionDuration : 1000;
     transitionDuration = isDefault
       ? { default: defaultDuration }
-      : Object.assign({ default: defaultDuration }, transitionDuration);
+      : { default: defaultDuration, ...transitionDuration };
 
     const newProps = Object.keys(cloneProps).filter(d => d !== "style");
     const oldProps = Object.keys(this.props).filter(
@@ -256,20 +257,47 @@ class Mark extends React.Component {
         !attributeTransitionWhitelist.find(d => d === newProp) ||
         (newProp === "d" && differentD(cloneProps.d, this.props.d))
       ) {
-        select(node)
-          .select("*")
-          .attr(adjustedPropName(newProp), cloneProps[newProp]);
+        if (newProp === "d" && nextProps.customTween) {
+          select(node)
+            .select("*")
+            .attr(
+              "d",
+              nextProps.customTween.fn(
+                nextProps.customTween.props,
+                nextProps.customTween.props
+              )(1)
+            );
+        } else {
+          select(node)
+            .select("*")
+            .attr(adjustedPropName(newProp), cloneProps[newProp]);
+        }
       } else {
         const {
           default: defaultDur,
           [newProp]: appliedDuration = defaultDur
         } = transitionDuration;
 
-        select(node)
-          .select("*")
-          .transition(adjustedPropName(newProp))
-          .duration(appliedDuration)
-          .attr(adjustedPropName(newProp), cloneProps[newProp]);
+        if (newProp === "d" && nextProps.customTween) {
+          const initialTweenProps = { ...this.props.customTween.props };
+          const nextTweenProps = { ...nextProps.customTween.props };
+          select(node)
+            .select("*")
+            .transition(adjustedPropName("d"))
+            .duration(appliedDuration)
+            .attrTween("d", () => {
+              return nextProps.customTween.fn(
+                initialTweenProps,
+                nextTweenProps
+              );
+            });
+        } else {
+          select(node)
+            .select("*")
+            .transition(adjustedPropName(newProp))
+            .duration(appliedDuration)
+            .attr(adjustedPropName(newProp), cloneProps[newProp]);
+        }
       }
     });
 
@@ -388,6 +416,7 @@ class Mark extends React.Component {
           onMouseDown={this._mousedown}
           onMouseUp={this._mouseup}
           transform={"translate(" + this.state.translate + ")"}
+          aria-label={this.props["aria-label"]}
         >
           {actualSVG}
         </g>
@@ -399,6 +428,7 @@ class Mark extends React.Component {
           className={className}
           onMouseEnter={mouseIn}
           onMouseOut={mouseOut}
+          aria-label={this.props["aria-label"]}
         >
           {actualSVG}
         </g>
@@ -410,7 +440,11 @@ class Mark extends React.Component {
 Mark.propTypes = {
   markType: PropTypes.string.isRequired,
   forceUpdate: PropTypes.bool,
-  renderMode: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  renderMode: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.object
+  ]),
   draggable: PropTypes.bool,
   dropFunction: PropTypes.func,
   resetAfter: PropTypes.bool,
