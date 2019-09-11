@@ -3,7 +3,6 @@ import { select } from "d3-selection";
 import "d3-transition";
 
 import { generateSVG } from "./markBehavior/drawing";
-import { RoughGenerator } from "roughjs-es5/lib/generator";
 
 import {
   attributeTransitionWhitelist,
@@ -11,8 +10,6 @@ import {
   redrawSketchyList,
   differentD
 } from "./constants/markTransition";
-
-import PropTypes from "prop-types";
 
 function generateSketchyHash(props) {
   let { style = {} } = props;
@@ -26,9 +23,6 @@ function generateSketchyHash(props) {
 class Mark extends React.Component {
   constructor(props) {
     super(props);
-    this._mouseup = this._mouseup.bind(this);
-    this._mousedown = this._mousedown.bind(this);
-    this._mousemove = this._mousemove.bind(this);
 
     this.state = {
       translate: [0, 0],
@@ -49,6 +43,9 @@ class Mark extends React.Component {
   }
 
   updateSketchy(nextProps) {
+
+    const RoughGenerator = nextProps.sketchyGenerator
+
     const renderOptions =
       nextProps.renderMode !== null && typeof nextProps.renderMode === "object"
         ? nextProps.renderMode
@@ -56,7 +53,7 @@ class Mark extends React.Component {
 
     const sketchyHash =
       renderOptions.renderMode === "sketchy" && generateSketchyHash(nextProps);
-    if (sketchyHash && sketchyHash !== this.state.sketchyHash) {
+    if (RoughGenerator && sketchyHash && sketchyHash !== this.state.sketchyHash) {
       const { style = {} } = nextProps;
       const {
         simplification = 0,
@@ -68,7 +65,7 @@ class Mark extends React.Component {
         hachureAngle = -41
       } = renderOptions;
 
-      const roughGenerator = new RoughGenerator(
+      const roughGenerator = RoughGenerator(
         {},
         { width: 1000, height: 1000 }
       );
@@ -212,10 +209,6 @@ class Mark extends React.Component {
       return true;
     }
 
-    const canvas =
-      (this.props.canvas !== true && this.props.canvas) ||
-      (this.context && this.context.canvas);
-
     let node = this.node;
 
     const actualSVG = generateSVG(nextProps, nextProps.className);
@@ -334,65 +327,8 @@ class Mark extends React.Component {
     return false;
   }
 
-  _mouseup() {
-    document.onmousemove = null;
-
-    let finalTranslate = [0, 0];
-    if (!this.props.resetAfter) finalTranslate = this.state.translate;
-
-    this.setState({
-      dragging: false,
-      translate: finalTranslate,
-      uiUpdate: false
-    });
-    if (
-      this.props.dropFunction &&
-      this.props.context &&
-      this.props.context.dragSource
-    ) {
-      this.props.dropFunction(this.props.context.dragSource.props, this.props);
-      this.props.updateContext("dragSource", undefined);
-    }
-  }
-
-  _mousedown(event) {
-    this.setState({
-      mouseOrigin: [event.pageX, event.pageY],
-      translateOrigin: this.state.translate,
-      dragging: true
-    });
-    document.onmouseup = this._mouseup;
-    document.onmousemove = this._mousemove;
-  }
-
-  _mousemove(event) {
-    let xAdjust = this.props.freezeX ? 0 : 1;
-    let yAdjust = this.props.freezeY ? 0 : 1;
-
-    let adjustedPosition = [
-      event.pageX - this.state.mouseOrigin[0],
-      event.pageY - this.state.mouseOrigin[1]
-    ];
-    let adjustedTranslate = [
-      (adjustedPosition[0] + this.state.translateOrigin[0]) * xAdjust,
-      (adjustedPosition[1] + this.state.translateOrigin[1]) * yAdjust
-    ];
-    if (this.props.dropFunction && this.state.uiUpdate === false) {
-      this.props.updateContext("dragSource", this);
-      this.setState({
-        translate: adjustedTranslate,
-        uiUpdate: true,
-        dragging: true
-      });
-    } else {
-      this.setState({ translate: adjustedTranslate });
-    }
-  }
   render() {
     let className = this.props.className || "";
-
-    let mouseIn = null;
-    let mouseOut = null;
 
     const actualSVG =
       ((this.props.renderMode === "sketchy" ||
@@ -401,62 +337,17 @@ class Mark extends React.Component {
         this.state.sketchyFill) ||
       generateSVG(this.props, className);
 
-    if (this.props.draggable) {
-      return (
-        <g
-          ref={node => (this.node = node)}
-          className={className}
-          onMouseEnter={mouseIn}
-          onMouseOut={mouseOut}
-          onDoubleClick={this._doubleclick}
-          style={{
-            pointerEvents:
-              this.props.dropFunction && this.state.dragging ? "none" : "all"
-          }}
-          onMouseDown={this._mousedown}
-          onMouseUp={this._mouseup}
-          transform={"translate(" + this.state.translate + ")"}
-          aria-label={this.props["aria-label"]}
-        >
-          {actualSVG}
-        </g>
-      );
-    } else {
-      return (
-        <g
-          ref={node => (this.node = node)}
-          className={className}
-          onMouseEnter={mouseIn}
-          onMouseOut={mouseOut}
-          aria-label={this.props["aria-label"]}
-        >
-          {actualSVG}
-        </g>
-      );
-    }
+    return (
+      <g
+        ref={node => (this.node = node)}
+        className={className}
+        aria-label={this.props["aria-label"]}
+      >
+        {actualSVG}
+      </g>
+    );
+
   }
 }
-
-Mark.propTypes = {
-  markType: PropTypes.string.isRequired,
-  forceUpdate: PropTypes.bool,
-  renderMode: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.func,
-    PropTypes.object
-  ]),
-  draggable: PropTypes.bool,
-  dropFunction: PropTypes.func,
-  resetAfter: PropTypes.bool,
-  freezeX: PropTypes.bool,
-  freezeY: PropTypes.bool,
-  context: PropTypes.object,
-  updateContext: PropTypes.func,
-  className: PropTypes.string
-};
-
-Mark.contextTypes = {
-  canvas: PropTypes.object
-};
 
 export default Mark;

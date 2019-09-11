@@ -1,11 +1,7 @@
 import Mark from "./Mark";
-import DraggableMark from "./DraggableMark";
-import MarkContext from "./MarkContext";
 
 export default {
-  DraggableMark,
-  Mark,
-  MarkContext
+  Mark
 };
 
-export { DraggableMark, Mark, MarkContext };
+export { Mark };

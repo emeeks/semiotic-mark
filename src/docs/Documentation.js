@@ -6,11 +6,9 @@ import MarkDocs from "./components/MarkDocs";
 import { withStyles } from "material-ui/styles";
 import Divider from "material-ui/Divider";
 import ChevronLeftIcon from "material-ui-icons/ChevronLeft";
-import ChevronRightIcon from "material-ui-icons/ChevronRight";
 
 import classNames from "classnames";
 
-import "./../components/styles.css";
 import Drawer from "material-ui/Drawer";
 import AppBar from "material-ui/AppBar";
 import List, { ListItem, ListItemIcon, ListItemText } from "material-ui/List";
@@ -151,11 +149,11 @@ class Documentation extends React.Component {
         const finalStyle =
           selected === c
             ? {
-                borderTop: "5px double #ac9739",
-                borderBottom: "5px double #ac9739",
-                fontWeight: 900,
-                ...styleOver
-              }
+              borderTop: "5px double #ac9739",
+              borderBottom: "5px double #ac9739",
+              fontWeight: 900,
+              ...styleOver
+            }
             : styleOver;
         allDocs.push(
           <Link to={`/${c}`} key={`${c}-link`}>
