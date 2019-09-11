@@ -25,11 +25,6 @@ class Mark extends React.Component {
     super(props);
 
     this.state = {
-      translate: [0, 0],
-      mouseOrigin: [],
-      translateOrigin: [0, 0],
-      dragging: false,
-      uiUpdate: false,
       sketchyFill: undefined,
       sketchyHash: ""
     };
