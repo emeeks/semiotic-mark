@@ -26,15 +26,14 @@ class Mark extends React.Component {
 
     this.state = {
       sketchyFill: undefined,
-      sketchyHash: ""
+      sketchyHash: "",
+      ...this.updateSketchy(props)
     };
+
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.updateSketchy(nextProps);
-  }
-  componentWillMount() {
-    this.updateSketchy(this.props);
+  static getDerivedStateFromProps(nextProps) {
+    return updateSketchy(nextProps)
   }
 
   updateSketchy(nextProps) {
@@ -181,11 +180,12 @@ class Mark extends React.Component {
           );
         });
 
-      this.setState({
+      return {
         sketchyHash: sketchyHash,
         sketchyFill: roughPieces
-      });
+      }
     }
+    return null
   }
 
   shouldComponentUpdate(nextProps) {
