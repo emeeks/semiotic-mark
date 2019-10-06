@@ -3,9 +3,7 @@ import DocumentComponent from "../layout/DocumentComponent";
 import { Mark } from "../../components";
 import { arc } from "d3-shape";
 import { interpolateNumber } from "d3-interpolate";
-import { generator } from "roughjs/dist/rough.umd"
-
-console.log("generator", generator)
+import { generator } from "roughjs/dist/rough.es5.umd.js"
 
 const components = [];
 // Add your component proptype data here

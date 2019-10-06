@@ -20,6 +20,159 @@ function generateSketchyHash(props) {
   return sketchyHash;
 }
 
+const updateSketchy = (nextProps, oldSketchyHash) => {
+
+  const RoughGenerator = nextProps.sketchyGenerator
+
+  const renderOptions =
+    nextProps.renderMode !== null && typeof nextProps.renderMode === "object"
+      ? nextProps.renderMode
+      : { renderMode: nextProps.renderMode };
+
+  const sketchyHash =
+    renderOptions.renderMode === "sketchy" && generateSketchyHash(nextProps);
+  if (RoughGenerator && sketchyHash && sketchyHash !== oldSketchyHash) {
+    const { style = {} } = nextProps;
+    const {
+      simplification = 0,
+      curveStepCount = 9,
+      fillStyle = "hachure",
+      roughness = 1,
+      bowing = 1,
+      fillWeight = 1,
+      hachureAngle = -41
+    } = renderOptions;
+
+    const roughGenerator = RoughGenerator(
+      {},
+      { width: 1000, height: 1000 }
+    );
+    let drawingInstructions;
+    const roughOptions = {
+      fill: style.fill || nextProps.fill,
+      stroke: style.stroke || nextProps.stroke,
+      strokeWidth: style.strokeWidth || nextProps.strokeWidth,
+      fillStyle: fillStyle,
+      roughness: roughness,
+      bowing: bowing,
+      fillWeight: fillWeight,
+      hachureAngle: hachureAngle,
+      hachureGap:
+        renderOptions.hachureGap ||
+        (style.fillOpacity && (5 - style.fillOpacity * 5) * fillWeight) ||
+        fillWeight * 2,
+      curveStepCount: curveStepCount,
+      simplification: simplification
+    };
+
+    switch (nextProps.markType) {
+      case "line":
+        drawingInstructions = roughGenerator.line(
+          nextProps.x1 || 0,
+          nextProps.y1 || 0,
+          nextProps.x2 || 0,
+          nextProps.y2 || 0,
+          roughOptions
+        );
+        break;
+      case "rect":
+        if (nextProps.rx || nextProps.ry) {
+          drawingInstructions = roughGenerator.circle(
+            (nextProps.x || 0) + nextProps.width / 2,
+            (nextProps.y || 0) + nextProps.width / 2,
+            nextProps.width,
+            roughOptions
+          );
+        } else {
+          drawingInstructions = roughGenerator.rectangle(
+            nextProps.x || 0,
+            nextProps.y || 0,
+            nextProps.width,
+            nextProps.height,
+            roughOptions
+          );
+        }
+        break;
+      case "circle":
+        drawingInstructions = roughGenerator.circle(
+          nextProps.cx || 0,
+          nextProps.cy || 0,
+          nextProps.r * 2,
+          roughOptions
+        );
+        break;
+      case "ellipse":
+        drawingInstructions = roughGenerator.ellipse(
+          nextProps.x || 0,
+          nextProps.y || 0,
+          nextProps.width,
+          nextProps.height,
+          roughOptions
+        );
+        break;
+      case "polygon":
+        drawingInstructions = roughGenerator.polygon(
+          nextProps.points,
+          roughOptions
+        );
+        break;
+      case "path":
+        drawingInstructions = roughGenerator.path(nextProps.d, roughOptions);
+        break;
+    }
+
+    const roughPieces = [];
+    roughGenerator
+      .toPaths(drawingInstructions)
+      .forEach(({ d, fill, stroke, strokeWidth, pattern }, i) => {
+        if (pattern) {
+          const roughRandomID = `rough-${Math.random()}`;
+          roughPieces.push(
+            <pattern
+              key={`pattern-${i}`}
+              id={roughRandomID}
+              x={pattern.x}
+              y={pattern.y}
+              height={pattern.height}
+              width={pattern.width}
+              viewBox={pattern.viewBox}
+            >
+              <path
+                key={`pattern-path-${i}`}
+                d={pattern.path.d}
+                style={{
+                  fill: pattern.path.fill,
+                  stroke: pattern.path.stroke,
+                  strokeWidth: pattern.path.strokeWidth
+                }}
+              />
+            </pattern>
+          );
+          fill = `url(#${roughRandomID})`;
+        }
+        roughPieces.push(
+          <path
+            key={`path-${i}`}
+            d={d}
+            style={{
+              fill: fill,
+              stroke: stroke,
+              strokeWidth: strokeWidth
+            }}
+            transform={nextProps.transform}
+          />
+        );
+      });
+
+    return {
+      sketchyHash: sketchyHash,
+      sketchyFill: roughPieces
+    }
+  }
+  return null
+}
+
+
 class Mark extends React.Component {
   constructor(props) {
     super(props);
@@ -27,165 +180,13 @@ class Mark extends React.Component {
     this.state = {
       sketchyFill: undefined,
       sketchyHash: "",
-      ...this.updateSketchy(props)
+      ...updateSketchy(props, "")
     };
 
   }
 
-  static getDerivedStateFromProps(nextProps) {
-    return updateSketchy(nextProps)
-  }
-
-  updateSketchy(nextProps) {
-
-    const RoughGenerator = nextProps.sketchyGenerator
-
-    const renderOptions =
-      nextProps.renderMode !== null && typeof nextProps.renderMode === "object"
-        ? nextProps.renderMode
-        : { renderMode: nextProps.renderMode };
-
-    const sketchyHash =
-      renderOptions.renderMode === "sketchy" && generateSketchyHash(nextProps);
-    if (RoughGenerator && sketchyHash && sketchyHash !== this.state.sketchyHash) {
-      const { style = {} } = nextProps;
-      const {
-        simplification = 0,
-        curveStepCount = 9,
-        fillStyle = "hachure",
-        roughness = 1,
-        bowing = 1,
-        fillWeight = 1,
-        hachureAngle = -41
-      } = renderOptions;
-
-      const roughGenerator = RoughGenerator(
-        {},
-        { width: 1000, height: 1000 }
-      );
-      let drawingInstructions;
-      const roughOptions = {
-        fill: style.fill || nextProps.fill,
-        stroke: style.stroke || nextProps.stroke,
-        strokeWidth: style.strokeWidth || nextProps.strokeWidth,
-        fillStyle: fillStyle,
-        roughness: roughness,
-        bowing: bowing,
-        fillWeight: fillWeight,
-        hachureAngle: hachureAngle,
-        hachureGap:
-          renderOptions.hachureGap ||
-          (style.fillOpacity && (5 - style.fillOpacity * 5) * fillWeight) ||
-          fillWeight * 2,
-        curveStepCount: curveStepCount,
-        simplification: simplification
-      };
-
-      switch (nextProps.markType) {
-        case "line":
-          drawingInstructions = roughGenerator.line(
-            nextProps.x1 || 0,
-            nextProps.y1 || 0,
-            nextProps.x2 || 0,
-            nextProps.y2 || 0,
-            roughOptions
-          );
-          break;
-        case "rect":
-          if (nextProps.rx || nextProps.ry) {
-            drawingInstructions = roughGenerator.circle(
-              (nextProps.x || 0) + nextProps.width / 2,
-              (nextProps.y || 0) + nextProps.width / 2,
-              nextProps.width,
-              roughOptions
-            );
-          } else {
-            drawingInstructions = roughGenerator.rectangle(
-              nextProps.x || 0,
-              nextProps.y || 0,
-              nextProps.width,
-              nextProps.height,
-              roughOptions
-            );
-          }
-          break;
-        case "circle":
-          drawingInstructions = roughGenerator.circle(
-            nextProps.cx || 0,
-            nextProps.cy || 0,
-            nextProps.r * 2,
-            roughOptions
-          );
-          break;
-        case "ellipse":
-          drawingInstructions = roughGenerator.ellipse(
-            nextProps.x || 0,
-            nextProps.y || 0,
-            nextProps.width,
-            nextProps.height,
-            roughOptions
-          );
-          break;
-        case "polygon":
-          drawingInstructions = roughGenerator.polygon(
-            nextProps.points,
-            roughOptions
-          );
-          break;
-        case "path":
-          drawingInstructions = roughGenerator.path(nextProps.d, roughOptions);
-          break;
-      }
-
-      const roughPieces = [];
-      roughGenerator
-        .toPaths(drawingInstructions)
-        .forEach(({ d, fill, stroke, strokeWidth, pattern }, i) => {
-          if (pattern) {
-            const roughRandomID = `rough-${Math.random()}`;
-            roughPieces.push(
-              <pattern
-                key={`pattern-${i}`}
-                id={roughRandomID}
-                x={pattern.x}
-                y={pattern.y}
-                height={pattern.height}
-                width={pattern.width}
-                viewBox={pattern.viewBox}
-              >
-                <path
-                  key={`pattern-path-${i}`}
-                  d={pattern.path.d}
-                  style={{
-                    fill: pattern.path.fill,
-                    stroke: pattern.path.stroke,
-                    strokeWidth: pattern.path.strokeWidth
-                  }}
-                />
-              </pattern>
-            );
-            fill = `url(#${roughRandomID})`;
-          }
-          roughPieces.push(
-            <path
-              key={`path-${i}`}
-              d={d}
-              style={{
-                fill: fill,
-                stroke: stroke,
-                strokeWidth: strokeWidth
-              }}
-              transform={nextProps.transform}
-            />
-          );
-        });
-
-      return {
-        sketchyHash: sketchyHash,
-        sketchyFill: roughPieces
-      }
-    }
-    return null
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return updateSketchy(nextProps, prevState.sketchyHash)
   }
 
   shouldComponentUpdate(nextProps) {
