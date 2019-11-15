@@ -84,6 +84,7 @@ export function generateSVG(props, className) {
   delete cloneProps.tx;
   delete cloneProps.ty;
   delete cloneProps.customTween;
+  delete cloneProps.sketchyGenerator;
 
   //        let transform = cloneProps['transform'];
   if (props.draggable) {
