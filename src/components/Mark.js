@@ -121,10 +121,25 @@ const updateSketchy = (nextProps, oldSketchyHash) => {
         break;
     }
 
+    const fillOpacityStyles = {
+    }
+    const strokeOpacityStyles = {
+    }
+
+    // Assume if hachure gap is explicitly set then opacity is real
+    if (renderOptions.hachureGap) {
+      fillOpacityStyles.opacity = style.opacity || nextProps.opacity
+      fillOpacityStyles.strokeOpacity = style.fillOpacity || nextProps.fillOpacity
+      strokeOpacityStyles.opacity = style.opacity || nextProps.opacity
+      strokeOpacityStyles.strokeOpacity = style.strokeOpacity || nextProps.strokeOpacity
+    }
+
     const roughPieces = [];
     roughGenerator
       .toPaths(drawingInstructions)
       .forEach(({ d, fill, stroke, strokeWidth, pattern }, i) => {
+
+        const opacityStyles = i === 0 ? fillOpacityStyles : strokeOpacityStyles
         if (pattern) {
           const roughRandomID = `rough-${Math.random()}`;
           roughPieces.push(
@@ -157,7 +172,8 @@ const updateSketchy = (nextProps, oldSketchyHash) => {
             style={{
               fill: fill,
               stroke: stroke,
-              strokeWidth: strokeWidth
+              strokeWidth: strokeWidth,
+              ...opacityStyles
             }}
             transform={nextProps.transform}
           />
