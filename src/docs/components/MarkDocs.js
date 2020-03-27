@@ -378,68 +378,40 @@ export default class MarkDocs extends React.Component {
           </div>
         ),
         source: `
-      import { Mark } from 'semiotic';
-      const randomColor = () => ${"`rgb(${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)})`"}
-
-        <svg height="365" width="500">
-            <Mark
-              markType="rect"
-              width={100}
-              height={100}
-              style={{
-                fill: this.state.transitionColor,
-                stroke: this.state.transitionColor2,
-                strokeWidth: 5
-              }}
-              x={25}
-              y={25}
+      `
+      },
+      {
+        name: "Transition Circles",
+        demo: (
+          <div>
+            <button
               onClick={() => {
                 this.setState({
-                  transitionColor: randomColor(),
-                  transitionColor2: randomColor()
-                })
+                  x: Math.random() * 100,
+                  y: Math.random() * 100
+                });
               }}
-            />
-            <Mark
-              markType="rect"
-              width={100}
-              height={100}
-              transitionDuration={300}
-              style={{
-                fill: this.state.transitionColor,
-                stroke: this.state.transitionColor2,
-                strokeWidth: 5
-              }}
-              x={145}
-              y={25}
-            />
-            <Mark
-              markType="rect"
-              width={100}
-              height={100}
-              transitionDuration={{ fill: 2000 }}
-              style={{
-                fill: this.state.transitionColor,
-                stroke: this.state.transitionColor2,
-                strokeWidth: 5
-              }}
-              x={25}
-              y={145}
-            />
-            <Mark
-              markType="rect"
-              width={100}
-              height={100}
-              transitionDuration={{ default: 5000, stroke: 500 }}
-              style={{
-                fill: this.state.transitionColor,
-                stroke: this.state.transitionColor2,
-                strokeWidth: 5
-              }}
-              x={145}
-              y={145}
-            />
-          </svg>
+              style={{ color: "black" }}
+            >
+              Change Position
+            </button>
+            <svg height="365" width="600">
+              <Mark
+                markType="circle"
+                r={50}
+                style={{
+                  fill: "red",
+                  stroke: "purple",
+                  strokeWidth: 5
+                }}
+                transform={`translate(${75 + this.state.x},${75 + this.state.y})`}
+                renderMode="sketchy"
+                sketchyGenerator={generator}
+              />
+            </svg>
+          </div>
+        ),
+        source: `
       `
       },
       {

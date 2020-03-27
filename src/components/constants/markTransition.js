@@ -24,7 +24,8 @@ export const redrawSketchyList = [
   "y2",
   "rx",
   "ry",
-  "r"
+  "r",
+  "transform"
 ];
 
 export const attributeTransitionWhitelist = [
