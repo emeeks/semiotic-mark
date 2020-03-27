@@ -127,8 +127,9 @@ const updateSketchy = (nextProps, oldSketchyHash) => {
     }
 
     // Assume if hachure gap is explicitly set then opacity is real
-    if (renderOptions.hachureGap) {
+    if (renderOptions.hachureGap || renderOptions.fillStyle === "solid") {
       fillOpacityStyles.opacity = style.opacity || nextProps.opacity
+      fillOpacityStyles.fillOpacity = style.fillOpacity || nextProps.fillOpacity
       fillOpacityStyles.strokeOpacity = style.fillOpacity || nextProps.fillOpacity
       strokeOpacityStyles.opacity = style.opacity || nextProps.opacity
       strokeOpacityStyles.strokeOpacity = style.strokeOpacity || nextProps.strokeOpacity

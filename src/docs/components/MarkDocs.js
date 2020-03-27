@@ -216,7 +216,9 @@ export default class MarkDocs extends React.Component {
                 style={{
                   fill: "gold",
                   stroke: "black",
-                  strokeWidth: "1px"
+                  strokeWidth: "1px",
+                  fillOpacity: 0.5,
+                  strokeOpacity: 0.2
                 }}
               />
               <Mark
