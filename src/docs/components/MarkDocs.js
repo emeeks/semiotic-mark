@@ -206,7 +206,9 @@ export default class MarkDocs extends React.Component {
                 markType="rect"
                 renderMode={{
                   renderMode: "sketchy",
-                  fillStyle: "solid"
+                  fillStyle: "zigzag",
+                  hachureGap: 8,
+                  fillWeight: 3
                 }}
                 sketchyGenerator={generator}
                 width={100}
@@ -217,8 +219,8 @@ export default class MarkDocs extends React.Component {
                   fill: "gold",
                   stroke: "black",
                   strokeWidth: "1px",
-                  fillOpacity: 0.5,
-                  strokeOpacity: 0.2
+                  fillOpacity: 0.75,
+                  strokeOpacity: 0.95
                 }}
               />
               <Mark

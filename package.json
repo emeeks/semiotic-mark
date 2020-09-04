@@ -32,7 +32,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "6.4.5",
-    "babel-eslint": "^7.2.3",
     "babel-preset-netflix-dea": "^3.0.1",
     "babel-register": "^6.7.2",
     "conventional-changelog-cli": "1.1.1",
@@ -42,8 +41,6 @@
     "dentist": "1.0.3",
     "enzyme": "3.1.0",
     "enzyme-adapter-react-16": "1.0.1",
-    "eslint": "4.2.0",
-    "eslint-config-netflix-dea": "3.0.0",
     "eslint-plugin-react": "^7.3.0",
     "history": "4.2.0",
     "jsdom": "8.1.0",
@@ -59,7 +56,7 @@
     "react-prism": "4.3.1",
     "react-router": "^4.0.0-beta.6",
     "react-router-dom": "4.2.2",
-    "react-scripts": "1.0.13",
+    "react-scripts": "2",
     "react-test-renderer": "16.0.0",
     "reactstrap": "git://github.com/jameswomack/reactstrap#react-popper_react-dom-16",
     "roughjs": "^3.1.0",
@@ -72,13 +69,19 @@
     "react-dom": "^16.9.0"
   },
   "dependencies": {
-    "d3-selection": "^1.4.0",
-    "d3-transition": "^1.2.0"
+    "d3-selection": "2",
+    "d3-transition": "2"
   },
   "nyc": {
     "exclude": [
       "tests/unit/lib/*.js",
       "tests/unit/specs/**/*.js"
     ]
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
