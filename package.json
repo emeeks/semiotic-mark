@@ -43,7 +43,7 @@
     "enzyme-adapter-react-16": "1.0.1",
     "eslint-plugin-react": "^7.3.0",
     "history": "4.2.0",
-    "jsdom": "8.1.0",
+    "jsdom": "16.5.0",
     "less": "2.7.1",
     "material-design-icons-svg": "1.1.2",
     "material-ui": "v1.0.0-beta.13",
